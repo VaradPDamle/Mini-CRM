@@ -9,8 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\OrderStoreRequest; 
 use Illuminate\Support\Facades\Storage; 
-use App\Models\User; // <-- Used to find the Admin user
-use App\Notifications\NewOrderNotification; // <-- Used to send the email notification
+use App\Models\User; 
+use App\Notifications\NewOrderNotification; 
+use Maatwebsite\Excel\Facades\Excel;     // <-- NEW: Import the Excel Facade
+use App\Exports\OrdersExport;            // <-- NEW: Import the Orders Export class
 
 class OrderController extends Controller
 {
@@ -55,7 +57,6 @@ class OrderController extends Controller
         ]);
 
         // 2. Find Admin Users
-        // We look up all users with the role 'admin'
         $adminUsers = User::where('role', 'admin')->get();
 
         // 3. Send Notification to Admins
@@ -108,6 +109,15 @@ class OrderController extends Controller
         return redirect()->route('orders.index')->with('status', 'Order deleted successfully (Soft Deleted)!');
     }
     
+    /**
+     * Download a CSV/Excel export of all orders.
+     */
+    public function export()
+    {
+        // Use the Excel Facade to download the export class as a CSV file
+        return Excel::download(new OrdersExport, 'orders_list.csv');
+    }
+
     public function show(Order $order)
     {
         // Not required by current project scope

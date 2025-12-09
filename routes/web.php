@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController; 
-use App\Http\Controllers\DashboardController; // <-- NEW: Imported the DashboardController
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,12 +17,24 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 Route::middleware('auth')->group(function () {
     
     // Customer Management Module Routes (Existing RBAC)
+    
+    // CUSTOMER EXPORT ROUTE
+    Route::get('customers/export/', [CustomerController::class, 'export'])->name('customers.export'); 
+
+    // Customer Resource Route (Handles index, create, store, edit, update)
     Route::resource('customers', CustomerController::class)->except(['destroy']); 
+    
+    // Only Admins can access the destroy method (redefine destroy with isAdmin middleware)
     Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])
         ->middleware('isAdmin')
         ->name('customers.destroy');
 
     // Order Management Module Routes
+    
+    // ORDER EXPORT ROUTE (NEW ADDITION - Defined BEFORE resource route)
+    Route::get('orders/export/', [OrderController::class, 'export'])->name('orders.export'); 
+
+    // Order Resource Route
     Route::resource('orders', OrderController::class);
 
     // Profile Management Routes

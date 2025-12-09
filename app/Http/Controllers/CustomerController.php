@@ -8,6 +8,8 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\CustomerStoreRequest; // Used for automatic validation
 use Illuminate\Support\Facades\Storage; // Used for deleting old profile images
+use Maatwebsite\Excel\Facades\Excel; // <-- Import the Excel Facade
+use App\Exports\CustomersExport; // <-- Import the Export class
 
 class CustomerController extends Controller
 {
@@ -113,7 +115,19 @@ class CustomerController extends Controller
         return redirect()->route('customers.index')->with('status', 'Customer deleted successfully (Soft Deleted)!');
     }
     
-    // The show method is typically left empty unless required for dedicated viewing
+    /**
+     * Download a CSV/Excel export of all customers.
+     * This is the new method for Day 6.
+     */
+    public function export()
+    {
+        // Uses the Excel Facade to download data from the CustomersExport class
+        return Excel::download(new CustomersExport, 'customers_list.csv');
+    }
+
+    /**
+     * The show method is typically left empty unless required for dedicated viewing
+     */
     public function show(Customer $customer)
     {
         // Not required by current project scope, but included for completeness

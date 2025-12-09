@@ -17,11 +17,36 @@
                         </div>
                     @endif
 
-                    <div class="flex justify-end mb-4">
-                        <a href="{{ route('customers.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-                            Add New Customer
-                        </a>
+                    {{-- SEARCH FORM, EXPORT BUTTON, and ADD NEW CUSTOMER BUTTONS --}}
+                    <div class="flex justify-between items-center mb-4">
+                        
+                        <form method="GET" action="{{ route('customers.index') }}" class="flex items-center space-x-2">
+                            <input type="text" name="search" placeholder="Search by name or email..." 
+                                   value="{{ $search ?? '' }}" 
+                                   class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-80">
+                            
+                            <x-primary-button type="submit">Search</x-primary-button>
+                            
+                            {{-- Clear button only appears if a search is active --}}
+                            @if(isset($search) && $search)
+                                <a href="{{ route('customers.index') }}" class="text-gray-500 hover:text-gray-700">Clear</a>
+                            @endif
+                        </form>
+
+                        <div class="flex space-x-2">
+                            {{-- Export Button (Day 6) --}}
+                            <a href="{{ route('customers.export') }}" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded">
+                                Export Customers (CSV)
+                            </a>
+
+                            {{-- Add New Customer Button (Day 1) --}}
+                            <a href="{{ route('customers.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                                Add New Customer
+                            </a>
+                        </div>
                     </div>
+                    {{-- END SEARCH, EXPORT, AND ADD BUTTONS --}}
+                    
 
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>

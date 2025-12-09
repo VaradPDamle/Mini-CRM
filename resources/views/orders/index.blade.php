@@ -17,7 +17,7 @@
                         </div>
                     @endif
 
-                    {{-- FILTER FORM and ADD NEW ORDER BUTTONS --}}
+                    {{-- FILTER FORM and ADD NEW ORDER/EXPORT BUTTONS --}}
                     <div class="flex justify-between items-center mb-4">
                         
                         {{-- Order Status Filter Form --}}
@@ -41,10 +41,19 @@
                             @endif
                         </form>
 
-                        {{-- Add New Order Button --}}
-                        <a href="{{ route('orders.create') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                            Add New Order
-                        </a>
+                        {{-- Export and Add New Order Buttons (UPDATED SECTION) --}}
+                        <div class="flex space-x-2">
+                            
+                            {{-- Export Orders Button (NEW ADDITION) --}}
+                            <a href="{{ route('orders.export') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                                Export Orders (CSV)
+                            </a>
+
+                            {{-- Add New Order Button (existing) --}}
+                            <a href="{{ route('orders.create') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                Add New Order
+                            </a>
+                        </div>
                     </div>
                     {{-- END FILTER FORM and BUTTONS --}}
 
@@ -87,8 +96,8 @@
                                     {{-- RBAC CHECK: Delete button only visible to Admin --}}
                                     @if (Auth::user()->role === 'admin')
                                         <form method="POST" action="{{ route('orders.destroy', $order) }}" 
-                                              onsubmit="return confirm('Are you sure you want to delete Order #{{ $order->order_number }}? This will soft delete the record.');" 
-                                              class="inline">
+                                            onsubmit="return confirm('Are you sure you want to delete Order #{{ $order->order_number }}? This will soft delete the record.');" 
+                                            class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900 text-sm">Delete</button>

@@ -2,16 +2,16 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\OrderController; // <-- NEW: Added the OrderController import
+use App\Http\Controllers\OrderController; 
+use App\Http\Controllers\DashboardController; // <-- NEW: Imported the DashboardController
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// UPDATED: Pointing the /dashboard route to the new DashboardController
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 // All routes inside this group require the user to be logged in ('auth')
 Route::middleware('auth')->group(function () {
@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
         ->name('customers.destroy');
 
     // Order Management Module Routes
-    Route::resource('orders', OrderController::class); // <-- NEW: Added the orders resource route
+    Route::resource('orders', OrderController::class);
 
     // Profile Management Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

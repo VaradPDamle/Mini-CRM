@@ -24,6 +24,19 @@ class Order extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * Casting `order_date` to `date` will return a Carbon instance
+     * so templates can safely call ->format() on it.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'order_date' => 'date',
+        'amount' => 'decimal:2',
+    ];
+
+    /**
      * Get the customer that owns the order (One-to-Many inverse relationship).
      */
     public function customer()

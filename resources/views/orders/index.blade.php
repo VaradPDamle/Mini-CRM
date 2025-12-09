@@ -17,12 +17,37 @@
                         </div>
                     @endif
 
-                    {{-- Button to add new order --}}
-                    <div class="flex justify-end mb-4">
+                    {{-- FILTER FORM and ADD NEW ORDER BUTTONS --}}
+                    <div class="flex justify-between items-center mb-4">
+                        
+                        {{-- Order Status Filter Form --}}
+                        <form method="GET" action="{{ route('orders.index') }}" class="flex items-center space-x-2">
+                            <label for="status-filter" class="text-sm font-medium text-gray-700">Filter by Status:</label>
+                            <select id="status-filter" name="status" onchange="this.form.submit()" 
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                
+                                <option value="">All Orders</option>
+                                {{-- $statusFilter is passed from the controller, checks for active filter --}}
+                                @foreach(['Pending', 'Completed', 'Cancelled'] as $statusOption)
+                                    <option value="{{ $statusOption }}" {{ (isset($statusFilter) && $statusFilter === $statusOption) ? 'selected' : '' }}>
+                                        {{ $statusOption }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            
+                            @if(isset($statusFilter) && $statusFilter)
+                                {{-- Button to clear filter if one is active --}}
+                                <a href="{{ route('orders.index') }}" class="text-gray-500 hover:text-gray-700">Clear Filter</a>
+                            @endif
+                        </form>
+
+                        {{-- Add New Order Button --}}
                         <a href="{{ route('orders.create') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                             Add New Order
                         </a>
                     </div>
+                    {{-- END FILTER FORM and BUTTONS --}}
+
 
                     {{-- Order Listing Table --}}
                     <table class="min-w-full divide-y divide-gray-200">
@@ -43,7 +68,7 @@
                                 {{-- Access Customer Name via the eager-loaded relationship --}}
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $order->customer->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $order->order_date }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right">**${{ number_format($order->amount, 2) }}**</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right">₹{{ number_format($order->amount, 2) }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{-- Status Badge Styling --}}
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -82,9 +107,9 @@
                         </tbody>
                     </table>
 
-                    {{-- Pagination --}}
+                    {{-- Pagination (CRUCIAL: Appends the filter query) --}}
                     <div class="mt-4">
-                        {{ $orders->links() }}
+                        {{ $orders->appends(['status' => $statusFilter ?? ''])->links() }}
                     </div>
                 </div>
             </div>

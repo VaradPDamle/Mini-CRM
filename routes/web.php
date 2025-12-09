@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CustomerController; // <-- Added the CustomerController
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController; // <-- NEW: Added the OrderController import
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,16 +16,14 @@ Route::get('/dashboard', function () {
 // All routes inside this group require the user to be logged in ('auth')
 Route::middleware('auth')->group(function () {
     
-    // Customer Management Module Routes
-    
-    // Staff can CRUD, Admin can CRUD + Delete
-    // The main resource route handles index, create, store, edit, update, show
+    // Customer Management Module Routes (Existing RBAC)
     Route::resource('customers', CustomerController::class)->except(['destroy']); 
-
-    // Only Admins can access the destroy method (redefine destroy with isAdmin middleware)
     Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])
         ->middleware('isAdmin')
         ->name('customers.destroy');
+
+    // Order Management Module Routes
+    Route::resource('orders', OrderController::class); // <-- NEW: Added the orders resource route
 
     // Profile Management Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

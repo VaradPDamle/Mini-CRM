@@ -3,22 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer; // Used for database interaction
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // <-- ESSENTIAL for search input
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\CustomerStoreRequest; // Used for automatic validation
-use Illuminate\Support\Facades\Storage; // <-- NEW: Used for deleting old profile images
+use Illuminate\Support\Facades\Storage; // Used for deleting old profile images
 
 class CustomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     * Implements Pagination.
+     * Display a listing of the resource with search and pagination.
      */
-    public function index(): View
+    public function index(Request $request): View // <-- Accepts the Request object
     {
-        $customers = Customer::paginate(10);
-        return view('customers.index', compact('customers'));
+        // Get the search term from the request (e.g., from the input field named 'search')
+        $search = $request->input('search');
+
+        // Start building the query
+        $query = Customer::query();
+
+        // If a search term is present, apply the 'where' clauses
+        if ($search) {
+            $query->where('name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('email', 'LIKE', '%' . $search . '%');
+        }
+        
+        // Retrieve customers with pagination (e.g., 10 per page)
+        // Apply the pagination to the filtered query (or the full query if no search)
+        $customers = $query->paginate(10);
+        
+        // Pass the customers AND the search term back to the view
+        return view('customers.index', compact('customers', 'search'));
     }
 
     /**
@@ -52,22 +67,19 @@ class CustomerController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     * Uses Route Model Binding (Customer $customer).
      */
-    public function edit(Customer $customer): View // <-- UPDATED: Using Route Model Binding
+    public function edit(Customer $customer): View
     {
-        // The Customer instance is automatically fetched by Laravel
         return view('customers.edit', compact('customer'));
     }
 
     /**
      * Update the specified resource in storage.
-     * Uses Route Model Binding (Customer $customer).
      */
-    public function update(CustomerStoreRequest $request, Customer $customer): RedirectResponse // <-- UPDATED: Using Form Request and Model Binding
+    public function update(CustomerStoreRequest $request, Customer $customer): RedirectResponse
     {
         // 1. Handle File Upload (Optional: Delete old image if new one is present)
-        $path = $customer->profile_image; // Keep the old path by default
+        $path = $customer->profile_image;
         
         if ($request->hasFile('profile_image')) {
             // Delete old file if it exists
@@ -92,9 +104,8 @@ class CustomerController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * Uses Route Model Binding (Customer $customer).
      */
-    public function destroy(Customer $customer): RedirectResponse // <-- UPDATED: Using Model Binding
+    public function destroy(Customer $customer): RedirectResponse
     {
         // Soft deletes the customer (sets the deleted_at timestamp)
         $customer->delete();

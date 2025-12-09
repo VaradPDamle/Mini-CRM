@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes; 
 
-class Customer extends Model
+class Order extends Model
 {
     use HasFactory, SoftDeletes; 
 
@@ -16,19 +16,19 @@ class Customer extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'address',
-        'profile_image',
+        'customer_id',
+        'order_number',
+        'amount',
+        'status',
+        'order_date',
     ];
 
     /**
-     * Get the orders associated with the customer (One-to-Many relationship).
+     * Get the customer that owns the order (One-to-Many inverse relationship).
      */
-    public function orders()
+    public function customer()
     {
-        // One Customer has many Orders
-        return $this->hasMany(Order::class);
+        // Assumes the foreign key is 'customer_id'
+        return $this->belongsTo(Customer::class);
     }
 }

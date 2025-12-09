@@ -6,8 +6,9 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
+// UPDATED ROOT ROUTE: Loads the new 'landing' page view
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing');
 });
 
 // UPDATED: Pointing the /dashboard route to the new DashboardController
@@ -31,7 +32,7 @@ Route::middleware('auth')->group(function () {
 
     // Order Management Module Routes
     
-    // ORDER EXPORT ROUTE (NEW ADDITION - Defined BEFORE resource route)
+    // ORDER EXPORT ROUTE (Defined BEFORE resource route)
     Route::get('orders/export/', [OrderController::class, 'export'])->name('orders.export'); 
 
     // Order Resource Route
